@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 using System.IO;
 
+using System.Reflection;
 using SharpPcap;
 
 namespace TeraPacketEncryption {
@@ -46,7 +47,33 @@ namespace TeraPacketEncryption {
 				return;
 			}
 
-			var parse = new Parse("log.txt");
+			var parse = new Parse();
+
+			Console.WriteLine();
+			Console.WriteLine("Device : {0}", devices[num - 1].Name);
+			Console.WriteLine("IP     : {0}", "208.67.49.68");
+			Console.WriteLine();
+
+			Console.WriteLine("loading plugins...");
+			var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\plugins";
+			var plugins = Directory.EnumerateFiles(directory);
+			foreach (string file in plugins) {
+				var plugin = Assembly.LoadFrom(file);
+				foreach (Type type in plugin.GetTypes()) {
+					if (type.GetInterface("TeraWatcherAPI.IPlugin") != null) {
+						var module = plugin.CreateInstance(type.FullName) as TeraWatcherAPI.IPlugin;
+						try {
+							module.Load(parse);
+							Console.WriteLine("- successfully loaded {0}", type.FullName);
+						} catch (Exception e) {
+							Console.WriteLine("- failed to load {0} ({1})", type.FullName, Path.GetFileName(file));
+							Console.WriteLine(e);
+						}
+					}
+				}
+			}
+			Console.WriteLine();
+
 			var capture = new Capture(num - 1, "208.67.49.68", parse);
 
 			return;

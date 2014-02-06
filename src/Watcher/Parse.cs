@@ -7,52 +7,34 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
+using TeraWatcherAPI.Events;
+
 namespace TeraPacketEncryption {
-	class Parse {
+	class Parse : TeraWatcherAPI.IHandler {
 		const int NAME_CHAR_MAX_LENGTH = 20;
 		const int NAME_GUILD_MAX_LENGTH = 32;
 		const int DEBUG_LEVEL = 1;
 
-		private void Log(int Level, string Message) {
-			if (Level <= DEBUG_LEVEL) Console.WriteLine(Message);
+		private delegate void Handle(byte[] data);
+
+		public event sPlayerInfoHandler sPlayerInfo;
+		public event sSelfStaminaHandler sSelfStamina;
+
+		public Parse() {
 		}
 
-		protected struct Player {
-			public ulong UID;
-			public string Name;
-			public string Guild;
-			public uint Class;
-			public uint Race;
-		}
-
-		protected Dictionary<ulong, Player> Players;
-		protected StreamWriter File;
-		protected Stopwatch Time;
-		protected ulong Self;
-
-		public Parse(string OutputFilename) {
-			Players = new Dictionary<ulong, Player>();
-			File = new StreamWriter(OutputFilename);
-			Time = new Stopwatch();
-			Time.Start();
-		}
-
-		public void Write(string String) {
-			File.Write("[ {0}, {1} ]\n", Time.ElapsedMilliseconds, String);
-			File.Flush();
-		}
-
-		public void WriteEvent(string Name, string Data) {
-			Write(GetJson(Name) + ", { " + Data + " }");
+		public void Log(int level, string format, params object[] args) {
+			Console.WriteLine(format, args);
 		}
 
 		public void ServerCommand(uint opCode, byte[] data) {
-			bool found = true;
+			Handle p_ = null;
+			
 			switch (opCode) {
 				case 0xD6FA: ParseSelfInfo(data); break;
 				case 0xF2DB: ParseSelfGuild(data); break;
-				case 0xF471: ParseSelfUpdateStamina(data); break;
-				case 0x53B2: ParsePlayerInfo(data); break;
+				case 0xF471: p_ += _sSelfStamina; break;
+				case 0x53B2: _sPlayerInfo(data); break;
 				case 0xF22C: ParseAttackStart(data); break;
 				//case 0xB470: ParseAttackEnd(data); break;
 				case 0x94EF: ParseAttackResult(data); break;
@@ -99,116 +81,17 @@ namespace TeraPacketEncryption {
 				case 0x7D18: ParseLockonResult(data); break;
 				//case 0x8568: ParsePartyMemberMove(data); break;
 				//case 0xE570: ParseMinionDeath(data); break;
-				default: found = false; break;
+				default: break;
 			}
 
-			//if (found || DEBUG_LEVEL < 1) return;
-
-			switch (opCode) {
-				case 0xBAAB: // mana regen
-				case 0xE628: // hp regen
-					break;
-
-				//case 0x58B1: // ?
-				//case 0xA3B2: // ?
-				case 0x622F: // ? system stuff?
-				//case 0x7ECC: // ?
-				case 0xF275: // alliance info?
-				case 0x9333: // loading?
-					break;
-
-				case 0x4ECE: // mob animation?
-
-				case 0xBC09: // lfg (u2:p_offs, u2:m_offs, u4:id, b:?, b:raid, s:player, s:message)
-
-				case 0x6325: // self stats
-				case 0x530A: // guild emblem
-				case 0xAD3D: // chat message
-				case 0xED02: // other movement
-				case 0x696F: // guildie login
-				//case 0xB417: // attack end
-				case 0x6995: // npc dialogue
-
-				case 0x7603: // animation start (u8:uid, u4/8:anim)
-					//break;
-
-				default:
-					int i, length = data.Length;
-					Console.Write("{2} | <- {1:X4} ({0,4})", length - 4, opCode, Time.ElapsedMilliseconds);
-					if (length > 4) Console.Write(" |");
-					for (i = 4; i < length; i++) Console.Write(" {0:X2}", data[i]);
-					Console.Write("\n");
-					break;
-			}
+			if (p_ != null) p_(data);
 		}
 
 		public void ClientCommand(uint opCode, byte[] data) {
-			bool found = true;
 			switch (opCode) {
 				case 0xF215: CParseYield(data); break;
 				case 0x685D: CParseTargetSelect(data); break;
 				case 0xEA79: CParseLockon(data); break;
-				default: found = false; break;
-			}
-
-			if (found) return; //
-
-			switch (opCode) {
-				case 0xC33F: // movement
-					break;
-
-				default:
-					var length = data.Length;
-					Console.Write("{2} | -> {1:X4} ({0,5})", length - 4, opCode, Time.ElapsedMilliseconds);
-					if (length > 4) Console.Write(" |");
-					for (int i = 4; i < length; i++) Console.Write(" {0:X2}", data[i]);
-					Console.Write("\n");
-					break;
-			}
-		}
-
-
-
-		private void DebugData(byte[] data) { DebugData(data, 0); }
-		private void DebugData(byte[] data, int offset) { DebugData(data, offset, data.Length - offset); }
-		private void DebugData(byte[] data, int offset, int length) {
-			Console.Write("**");
-			for (int i = offset, j = offset + length; i < j; i++)
-				Console.Write(" {0:X2}", data[i]);
-			Console.Write('\n');
-		}
-
-		private void DebugPlayer(Player player) {
-			Console.Write("{0} = {1}", player.UID, player.Name);
-			if (player.Guild.Length > 0) Console.Write(" ({0})", player.Guild);
-			Console.Write(" | ");
-
-			if (player.Race > 7) {
-				Console.Write(new string[] { "popori", "elin", "baraka" }[player.Race - 8]);
-			} else {
-				Console.Write(new string[] { "human", "helf", "aman", "castanic" }[player.Race / 2]);
-				Console.Write(' ');
-				Console.Write(new string[] { "male", "female" }[player.Race % 2]);
-			}
-			Console.Write(' ');
-			Console.Write(new string[] { "warrior", "lancer", "slayer", "zerker", "sorc", "archer", "priest", "mystic" }[player.Class]);
-			Console.Write('\n');
-		}
-
-		private string GetJson(string String) {
-			return '"' + String.Replace("\\", "\\\\").Replace("\"", "\\\"") + '"';
-		}
-
-		private string GetJson(bool Bool) {
-			return (Bool ? "true" : "false");
-		}
-
-		private string GetPlayerName(ulong uid) {
-			Player player;
-			if (Players.TryGetValue(uid, out player)) {
-				return player.Name;
-			} else {
-				return uid.ToString();
 			}
 		}
 
@@ -235,15 +118,14 @@ namespace TeraPacketEncryption {
 			return result;
 		}
 
-		private void GetClassAndRace(byte[] value, int startIndex, ref Player player) {
-			uint classAndRace = BitConverter.ToUInt32(value, startIndex) - 10101;
-			player.Class = classAndRace % 100;
-			player.Race = classAndRace / 100;
-		}
+		private void WriteEvent(string a, string b) {}
+		private string GetPlayerName(ulong a) { return ""; }
+		private string GetJson(string a) { return ""; }
 
 
 
 		private void ParseSelfInfo(byte[] data) { // 0xD6FA
+			/*
 			Self = BitConverter.ToUInt64(data, 18);
 
 			var Player = new Player();
@@ -257,9 +139,11 @@ namespace TeraPacketEncryption {
 				Player.UID,
 				GetJson(Player.Name),
 				BitConverter.ToUInt32(data, 14)));
+			 */
 		}
 
 		private void ParseSelfGuild(byte[] data) { // 0xF2DB
+			/*
 			Player self;
 
 			string name = GetString(data, 107, NAME_GUILD_MAX_LENGTH);
@@ -267,21 +151,24 @@ namespace TeraPacketEncryption {
 
 			if (Self == 0 || !Players.TryGetValue(Self, out self)) return; // ?
 			self.Guild = name;
+			 * */
 		}
 
-		private void ParseSelfUpdateStamina(byte[] data) { // 0xF471
-			int curST = BitConverter.ToInt32(data, 4);
-			int maxST = BitConverter.ToInt32(data, 8);
-			short tier = BitConverter.ToInt16(data, 12);
-			Console.WriteLine("~~ current stamina: {0}/{1} ({2})", curST, maxST, tier);
+		private void _sSelfStamina(byte[] data) { // 0xF471
+			var callback = sSelfStamina;
+			if (callback == null) return;
 
-			WriteEvent("sSelfUpdateStamina", String.Format("\"current\": {0}, \"max\": {1}, \"tier\": {2}",
-				curST,
-				maxST,
-				tier));
+			callback(new sSelfStaminaArgs() {
+				current = BitConverter.ToInt32(data, 4),
+				max = BitConverter.ToInt32(data, 8),
+				tier = BitConverter.ToInt16(data, 12)
+			});
 		}
 
-		private void ParsePlayerInfo(byte[] data) { // 0x53B2
+		private void _sPlayerInfo(byte[] data) { // 0x53B2
+			var callback = sPlayerInfo;
+			if (callback == null) return;
+
 			ushort nameOffset = BitConverter.ToUInt16(data, 4);
 			ushort guildOffset = BitConverter.ToUInt16(data, 6);
 			// guildRankOffset = UInt16(..., 8)
@@ -302,23 +189,10 @@ namespace TeraPacketEncryption {
 			string name = GetString(data, nameOffset, NAME_CHAR_MAX_LENGTH);
 			string guild = GetString(data, guildOffset, NAME_GUILD_MAX_LENGTH);
 
-			Player player = new Player() {
-				UID = id2,
-				Name = name,
-				Guild = guild
-			};
-			GetClassAndRace(data, 56, ref player);
-
-			DebugPlayer(player);
-
-			Players[player.UID] = player;
-
-			WriteEvent("sCharacterInfo", String.Format("\"pID\": {0}, \"cID\": {1}, \"model\": {2}, \"name\": {3}, \"guild\": {4}",
-				id1,
-				id2,
-				model,
-				GetJson(name),
-				GetJson(guild)));
+			callback(new sPlayerInfoArgs() {
+				uid = id2,
+				pid = id1
+			});
 		}
 
 		private void ParseAttackStart(byte[] data) { // 0xF22C
