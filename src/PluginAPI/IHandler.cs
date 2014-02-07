@@ -20,6 +20,12 @@ namespace TeraWatcherAPI {
 		event sImageHandler sImage;
 		event sLifeStatusHandler sLifeStatus;
 		event sLockonHandler sLockon;
+		event sLootReceivedHandler sLootReceived;
+		event sLootRemoveHandler sLootRemove;
+		event sLootRollHandler sLootRoll;
+		event sLootSpawnHandler sLootSpawn;
+		event sLootStatusHandler sLootStatus;
+		event sLootWonHandler sLootWon;
 		event sNpcCombatStatusHandler sNpcCombatStatus;
 		event sNpcEmotionHandler sNpcEmotion;
 		event sNpcHpHandler sNpcHp;

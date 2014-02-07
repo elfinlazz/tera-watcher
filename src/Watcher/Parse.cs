@@ -31,6 +31,12 @@ namespace TeraPacketEncryption {
 		public event sImageHandler sImage;
 		public event sLifeStatusHandler sLifeStatus;
 		public event sLockonHandler sLockon;
+		public event sLootReceivedHandler sLootReceived;
+		public event sLootRemoveHandler sLootRemove;
+		public event sLootRollHandler sLootRoll;
+		public event sLootSpawnHandler sLootSpawn;
+		public event sLootStatusHandler sLootStatus;
+		public event sLootWonHandler sLootWon;
 		public event sNpcCombatStatusHandler sNpcCombatStatus;
 		public event sNpcEmotionHandler sNpcEmotion;
 		public event sNpcHpHandler sNpcHp;
@@ -93,16 +99,20 @@ namespace TeraPacketEncryption {
 				case 0x7DAF: _sPartyUpdateMp(data); break;
 				case 0x8DD4: _sAbsorbDamage(data); break;
 				case 0x900F: _sNpcEmotion(data); break;
+				case 0x907D: _sLootStatus(data); break;
 				case 0x94EF: _sAttackResult(data); break;
 				case 0x96D0: _sAbnormalUpdate(data); break;
+				case 0x9943: _sLootWon(data); break;
 				case 0x9C09: _sLifeStatus(data); break;
 				case 0x9CAE: _sAbnormalAdd(data); break;
 				case 0x9EE7: _sConditionActivate(data); break;
+				case 0xA070: _sLootReceived(data); break;
 				case 0xA13E: _sPartyAbnormalAdd(data); break;
 				case 0xA3E2: _sCombatStatus(data); break;
 				case 0xA5EB: _sNpcStatus(data); break;
 				case 0xAD3D: _sChatMessage(data); break;
 				case 0xAE97: _sPartyDeath(data); break;
+				case 0xB2D7: _sLootSpawn(data); break;
 				case 0xB426: _sPartyAbnormalRemove(data); break;
 				case 0xB470: _sAttackEnd(data); break;
 				case 0xB7F5: _sConditionList(data); break;
@@ -123,10 +133,12 @@ namespace TeraPacketEncryption {
 				case 0xE1B2: _sNpcCombatStatus(data); break;
 				case 0xE628: _sUpdateHp(data); break;
 				case 0xEB10: _sProjectile(data); break;
+				case 0xEB44: _sLootRoll(data); break;
 				case 0xF22C: _sAttackStart(data); break;
 				case 0xF2DB: _sGuildInfo(data); break;
 				case 0xF471: _sSelfStamina(data); break;
 				case 0xF5A3: _sPartyInvitePriv(data); break;
+				case 0xF671: _sLootRemove(data); break;
 				default: PacketArgs.unknown = true; break;
 			}
 
@@ -979,6 +991,85 @@ namespace TeraPacketEncryption {
 				target = BitConverter.ToUInt64(data, 4),
 				attack = BitConverter.ToUInt32(data, 12),
 				result = data[16]
+			});
+		}
+
+		private void _sLootSpawn(byte[] data) { // 0xB2D7
+			var callback = sLootSpawn;
+			if (callback == null) return;
+
+			ushort numOwners = BitConverter.ToUInt16(data, 4);
+			ushort offsetOwners = BitConverter.ToUInt16(data, 6);
+
+			var owners = new List<ulong>(numOwners);
+			while (offsetOwners > 0) {
+				owners.Add(BitConverter.ToUInt64(data, offsetOwners + 4));
+				offsetOwners = BitConverter.ToUInt16(data, offsetOwners + 2);
+			}
+
+			callback(new sLootSpawnArgs {
+				id = BitConverter.ToUInt64(data, 8),
+				position = new Position {
+					X = BitConverter.ToSingle(data, 16),
+					Y = BitConverter.ToSingle(data, 20),
+					Z = BitConverter.ToSingle(data, 24)
+				},
+				item = BitConverter.ToUInt32(data, 28),
+				amount = BitConverter.ToUInt32(data, 32),
+				expiry = BitConverter.ToInt32(data, 36),
+				// unk
+				mob = BitConverter.ToUInt64(data, 46)
+			});
+		}
+
+		private void _sLootStatus(byte[] data) { // 0x907D
+			var callback = sLootStatus;
+			if (callback == null) return;
+
+			callback(new sLootStatusArgs {
+				id = BitConverter.ToUInt64(data, 4),
+				waiting = data[12]
+			});
+		}
+
+		private void _sLootReceived(byte[] data) { // 0xA070
+			var callback = sLootReceived;
+			if (callback == null) return;
+
+			callback(new sLootReceivedArgs {
+				target = BitConverter.ToUInt64(data, 4),
+				unk1 = BitConverter.ToInt32(data, 12),
+				unk2 = BitConverter.ToInt32(data, 16),
+				id = BitConverter.ToUInt64(data, 20),
+				unk3 = data[28]
+			});
+		}
+
+		private void _sLootRoll(byte[] data) { // 0xEB44
+			var callback = sLootRoll;
+			if (callback == null) return;
+
+			callback(new sLootRollArgs {
+				target = BitConverter.ToUInt64(data, 4),
+				roll = BitConverter.ToInt32(data, 12)
+			});
+		}
+
+		private void _sLootWon(byte[] data) { // 0x9943
+			var callback = sLootWon;
+			if (callback == null) return;
+
+			callback(new sLootWonArgs {
+				target = BitConverter.ToUInt64(data, 4)
+			});
+		}
+
+		private void _sLootRemove(byte[] data) { // 0xF671
+			var callback = sLootRemove;
+			if (callback == null) return;
+
+			callback(new sLootRemoveArgs {
+				id = BitConverter.ToUInt64(data, 4)
 			});
 		}
 

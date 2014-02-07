@@ -45,6 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\gPacket.cs" />
+    <Compile Include="Events\Server\sLootReceived.cs" />
+    <Compile Include="Events\Server\sLootRemove.cs" />
+    <Compile Include="Events\Server\sLootRoll.cs" />
+    <Compile Include="Events\Server\sLootSpawn.cs" />
     <Compile Include="Events\Server\sAbnormalAdd.cs" />
     <Compile Include="Events\Server\sAbnormalRemove.cs" />
     <Compile Include="Events\Server\sAbnormalUpdate.cs" />
@@ -61,6 +65,8 @@
     <Compile Include="Events\Server\sImage.cs" />
     <Compile Include="Events\Server\sLifeStatus.cs" />
     <Compile Include="Events\Server\sLockon.cs" />
+    <Compile Include="Events\Server\sLootStatus.cs" />
+    <Compile Include="Events\Server\sLootWon.cs" />
     <Compile Include="Events\Server\sNpcCombatStatus.cs" />
     <Compile Include="Events\Server\sNpcEmotion.cs" />
     <Compile Include="Events\Server\sNpcHp.cs" />
