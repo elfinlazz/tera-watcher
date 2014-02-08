@@ -4,3 +4,6 @@
 # Build results
 bin/
 obj/
+
+# Pre-compiled DLLs
+/lib/PluginAPI.dll
