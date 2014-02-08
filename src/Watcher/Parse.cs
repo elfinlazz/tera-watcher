@@ -41,6 +41,7 @@ namespace TeraPacketEncryption {
 		public event sNpcCombatStatusHandler sNpcCombatStatus;
 		public event sNpcEmotionHandler sNpcEmotion;
 		public event sNpcHpHandler sNpcHp;
+		public event sNpcInfoHandler sNpcInfo;
 		public event sNpcStatusHandler sNpcStatus;
 		public event sPartyAbnormalAddHandler sPartyAbnormalAdd;
 		public event sPartyAbnormalListHandler sPartyAbnormalList;
@@ -92,7 +93,6 @@ namespace TeraPacketEncryption {
 
 			switch (opCode) {
 				//case 0x8568: ParsePartyMemberMove(data); break;
-				//case 0xA7B4: ParseNpcInfo(data); break;
 				//case 0xD6FA: ParseSelfInfo(data); break;
 				//case 0xE570: ParseMinionDeath(data); break;
 				case 0x530A: _sImage(data); break;
@@ -117,6 +117,7 @@ namespace TeraPacketEncryption {
 				case 0x9D7B: _sWhisper(data); break;
 				case 0x9EE7: _sConditionActivate(data); break;
 				case 0xA070: _sLootReceived(data); break;
+				case 0xA7B4: _sNpcInfo(data); break;
 				case 0xA13E: _sPartyAbnormalAdd(data); break;
 				case 0xA3E2: _sCombatStatus(data); break;
 				case 0xA5EB: _sNpcStatus(data); break;
@@ -922,22 +923,29 @@ namespace TeraPacketEncryption {
 			});
 		}
 
-		private void ParseNpcInfo(byte[] data) { // 0xA7B4
-			// (unk?) <- UInt32(..., 4)
-			// shift <- UInt16(..., 8)
-			ulong uID = BitConverter.ToUInt64(data, 10);
-			// target <- UInt64(data, 18);
-			// pos.x <- Single(..., 26)
-			// pos.y <- Single(..., 30)
-			// pos.z <- Single(..., 34)
-			// pos.w <- Int16(..., 38)
-			// (unk?) <- 4 bytes, usually 0x0000000C
-			uint npcID = BitConverter.ToUInt32(data, 42);
-			ushort npcType = BitConverter.ToUInt16(data, 46);
-			uint npcModel = BitConverter.ToUInt32(data, 48);
-			// (unk?) <- ...
-			ulong owner = BitConverter.ToUInt64(data, 85);
-			// (unk?) <- ...
+		private void _sNpcInfo(byte[] data) { // 0xA7B4
+			var callback = sNpcInfo;
+			if (callback == null) return;
+
+			callback(new sNpcInfoArgs {
+				// (unk?) <- UInt32(..., 4)
+				// shift <- UInt16(..., 8)
+				id = BitConverter.ToUInt64(data, 10),
+				target = BitConverter.ToUInt64(data, 18),
+				position = new Position {
+					X = BitConverter.ToSingle(data, 26),
+					Y = BitConverter.ToSingle(data, 30),
+					Z = BitConverter.ToSingle(data, 34),
+				},
+				angle = BitConverter.ToInt16(data, 38),
+				// (unk?) <- 4 bytes, usually 0x0000000C
+				npc = BitConverter.ToUInt32(data, 42),
+				type = BitConverter.ToUInt16(data, 46),
+				model = BitConverter.ToUInt32(data, 48),
+				// (unk?) <- ...
+				owner = BitConverter.ToUInt64(data, 85),
+				// (unk?) <- ...
+			});
 		}
 
 		private void _sNpcCombatStatus(byte[] data) { // 0xE1B2

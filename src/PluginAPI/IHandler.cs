@@ -33,6 +33,7 @@ namespace TeraWatcherAPI {
 		event sNpcCombatStatusHandler sNpcCombatStatus;
 		event sNpcEmotionHandler sNpcEmotion;
 		event sNpcHpHandler sNpcHp;
+		event sNpcInfoHandler sNpcInfo;
 		event sNpcStatusHandler sNpcStatus;
 		event sPartyAbnormalAddHandler sPartyAbnormalAdd;
 		event sPartyAbnormalListHandler sPartyAbnormalList;
