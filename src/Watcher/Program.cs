@@ -50,7 +50,7 @@ namespace TeraPacketEncryption {
 
 			Console.WriteLine("loading plugins...");
 			var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\plugins";
-			var plugins = Directory.EnumerateFiles(directory);
+			var plugins = Directory.EnumerateFiles(directory, "*.dll", SearchOption.AllDirectories);
 			foreach (string file in plugins) {
 				var plugin = Assembly.LoadFrom(file);
 				foreach (Type type in plugin.GetTypes()) {
