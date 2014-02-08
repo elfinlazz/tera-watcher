@@ -39,8 +39,11 @@ namespace TeraPacketEncryption {
 			device.OnPacketArrival += new PacketArrivalEventHandler(device_PcapOnPacketArrival);
 
 			device.Capture();
-			device.Close(); // we shouldn't get here but just in case
-			thread.Join(); // this can't even happen
+
+			// not sure how we'd get here but clean up anyway
+			Terminate = true;
+			thread.Join();
+			device.Close();
 		}
 
 		private void Reset() {
@@ -60,7 +63,7 @@ namespace TeraPacketEncryption {
 		}
 
 		private void ProcessThread() {
-			while (true) {
+			while (!Terminate) {
 				bool naptime = true;
 				lock (QueueLock) {
 					if (PacketQueue.Count != 0) {
