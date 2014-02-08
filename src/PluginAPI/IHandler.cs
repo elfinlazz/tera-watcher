@@ -55,10 +55,12 @@ namespace TeraWatcherAPI {
 		event sProjectileHandler sProjectile;
 		event sProjectileRemoveHandler sProjectileRemove;
 		event sSelfStaminaHandler sSelfStamina;
+		event sSystemMessageHandler sSystemMessage;
 		event sTargetInfoHandler sTargetInfo;
 		event sUpdateHpHandler sUpdateHp;
 		event sUpdateMpHandler sUpdateMp;
 		event sUpdateReHandler sUpdateRe;
+		event sWhisperHandler sWhisper;
 
 		/*****************
 		 * Client Events *

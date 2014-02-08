@@ -63,10 +63,12 @@ namespace TeraPacketEncryption {
 		public event sProjectileHandler sProjectile;
 		public event sProjectileRemoveHandler sProjectileRemove;
 		public event sSelfStaminaHandler sSelfStamina;
+		public event sSystemMessageHandler sSystemMessage;
 		public event sTargetInfoHandler sTargetInfo;
 		public event sUpdateHpHandler sUpdateHp;
 		public event sUpdateMpHandler sUpdateMp;
 		public event sUpdateReHandler sUpdateRe;
+		public event sWhisperHandler sWhisper;
 
 		public event gPacketHandler cPacket;
 
@@ -99,6 +101,7 @@ namespace TeraPacketEncryption {
 				case 0x63B2: _sTargetInfo(data); break;
 				case 0x671E: _sConditionRemove(data); break;
 				case 0x6827: _sPartyConditionAdd(data); break;
+				case 0x696F: _sSystemMessage(data); break;
 				case 0x7695: _sPartyUpdate(data); break;
 				case 0x7C3B: _sProjectileRemove(data); break;
 				case 0x7D18: _sLockon(data); break;
@@ -111,6 +114,7 @@ namespace TeraPacketEncryption {
 				case 0x9943: _sLootWon(data); break;
 				case 0x9C09: _sLifeStatus(data); break;
 				case 0x9CAE: _sAbnormalAdd(data); break;
+				case 0x9D7B: _sWhisper(data); break;
 				case 0x9EE7: _sConditionActivate(data); break;
 				case 0xA070: _sLootReceived(data); break;
 				case 0xA13E: _sPartyAbnormalAdd(data); break;
@@ -972,6 +976,42 @@ namespace TeraPacketEncryption {
 				unk2 = data[22], // own message?
 				authorName = GetString(data, senderOffset, NAME_CHAR_MAX_LENGTH),
 				message = GetString(data, messageOffset, 1023)
+			});
+		}
+
+		private void _sWhisper(byte[] data) { // 0x9D7B
+			var callback = sWhisper;
+			if (callback == null) return;
+
+			var authorOffset = BitConverter.ToUInt16(data, 4);
+			var recipientOffset = BitConverter.ToUInt16(data, 6);
+			var messageOffset = BitConverter.ToUInt16(data, 8);
+
+			callback(new sWhisperArgs {
+				player = BitConverter.ToUInt64(data, 10),
+				unk1 = data[18],
+				gm = data[19],
+				unk2 = data[20], // own message?
+				author = GetString(data, authorOffset, NAME_CHAR_MAX_LENGTH),
+				recipient = GetString(data, recipientOffset, NAME_CHAR_MAX_LENGTH),
+				message = GetString(data, messageOffset, 1023)
+			});
+		}
+
+		private void _sSystemMessage(byte[] data) { // 0x696F
+			var callback = sSystemMessage;
+			if (callback == null) return;
+
+			var strs = BitConverter.ToString(data).Split((char)11);
+			var args = new Dictionary<string, string>();
+
+			for (var i = 1; i < strs.Length; i += 2) {
+				args[strs[i]] = strs[i + 1];
+			}
+
+			callback(new sSystemMessageArgs {
+				id = strs[0].Substring(1),
+				args = args
 			});
 		}
 

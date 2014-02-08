@@ -49,6 +49,8 @@
     <Compile Include="Events\Client\cTarget.cs" />
     <Compile Include="Events\Client\cWhisper.cs" />
     <Compile Include="Events\gPacket.cs" />
+    <Compile Include="Events\Server\sSystemMessage.cs" />
+    <Compile Include="Events\Server\sWhisper.cs" />
     <Compile Include="Events\Server\sLootWindow.cs" />
     <Compile Include="Events\Server\sLootReceived.cs" />
     <Compile Include="Events\Server\sLootRemove.cs" />
