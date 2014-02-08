@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TeraWatcherAPI.Events;
 using TeraWatcherAPI.Types;
 
-namespace TeraPacketEncryption {
+namespace Watcher {
 	class Parse : TeraWatcherAPI.IHandler {
 		const int NAME_CHAR_MAX_LENGTH = 20;
 		const int NAME_GUILD_MAX_LENGTH = 32;

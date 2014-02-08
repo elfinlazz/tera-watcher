@@ -6,7 +6,7 @@ using System.Threading;
 using Crypt;
 using SharpPcap;
 
-namespace TeraPacketEncryption {
+namespace Watcher {
 	class Capture {
 		protected Parse Parse;
 		protected Session Session;

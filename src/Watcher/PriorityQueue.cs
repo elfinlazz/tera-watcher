@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TeraPacketEncryption {
+namespace Watcher {
 	class PriorityQueue<T> {
 		private SortedList<uint, T> _list;
 		public int Count {

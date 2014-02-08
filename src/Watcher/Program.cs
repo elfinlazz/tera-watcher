@@ -5,7 +5,7 @@ using System.Reflection;
 
 using SharpPcap;
 
-namespace TeraPacketEncryption {
+namespace Watcher {
 	class Program {
 		static void Main(string[] args) {
 			var devices = CaptureDeviceList.Instance;
