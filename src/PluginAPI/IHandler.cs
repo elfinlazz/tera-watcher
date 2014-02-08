@@ -2,6 +2,9 @@
 
 namespace TeraWatcherAPI {
 	public interface IHandler {
+		/*****************
+		 * Server Events *
+		 *****************/
 		event gPacketHandler sPacket;
 
 		event sAbnormalAddHandler sAbnormalAdd;
@@ -25,6 +28,7 @@ namespace TeraWatcherAPI {
 		event sLootRollHandler sLootRoll;
 		event sLootSpawnHandler sLootSpawn;
 		event sLootStatusHandler sLootStatus;
+		event sLootWindowHandler sLootWindow;
 		event sLootWonHandler sLootWon;
 		event sNpcCombatStatusHandler sNpcCombatStatus;
 		event sNpcEmotionHandler sNpcEmotion;
@@ -56,8 +60,19 @@ namespace TeraWatcherAPI {
 		event sUpdateMpHandler sUpdateMp;
 		event sUpdateReHandler sUpdateRe;
 
+		/*****************
+		 * Client Events *
+		 *****************/
 		event gPacketHandler cPacket;
 
+		event cLockonHandler cLockon;
+		event cMoveHandler cMove;
+		event cTargetHandler cTarget;
+		event cWhisperHandler cWhisper;
+
+		/***********
+		 * Methods *
+		 ***********/
 		void Log(int level, string format, params object[] args);
 	}
 }

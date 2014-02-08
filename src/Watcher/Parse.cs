@@ -36,6 +36,7 @@ namespace TeraPacketEncryption {
 		public event sLootRollHandler sLootRoll;
 		public event sLootSpawnHandler sLootSpawn;
 		public event sLootStatusHandler sLootStatus;
+		public event sLootWindowHandler sLootWindow;
 		public event sLootWonHandler sLootWon;
 		public event sNpcCombatStatusHandler sNpcCombatStatus;
 		public event sNpcEmotionHandler sNpcEmotion;
@@ -68,6 +69,11 @@ namespace TeraPacketEncryption {
 		public event sUpdateReHandler sUpdateRe;
 
 		public event gPacketHandler cPacket;
+
+		public event cLockonHandler cLockon;
+		public event cMoveHandler cMove;
+		public event cTargetHandler cTarget;
+		public event cWhisperHandler cWhisper;
 
 		public Parse() {
 		}
@@ -139,6 +145,7 @@ namespace TeraPacketEncryption {
 				case 0xF471: _sSelfStamina(data); break;
 				case 0xF5A3: _sPartyInvitePriv(data); break;
 				case 0xF671: _sLootRemove(data); break;
+				case 0xFDD2: _sLootWindow(data); break;
 				default: PacketArgs.unknown = true; break;
 			}
 
@@ -153,9 +160,11 @@ namespace TeraPacketEncryption {
 			};
 
 			switch (opCode) {
-				case 0xF215: CParseYield(data); break;
-				case 0x685D: CParseTargetSelect(data); break;
-				case 0xEA79: CParseLockon(data); break;
+				//case 0xF215: CParseYield(data); break;
+				case 0x685D: _cTarget(data); break;
+				case 0x7932: _cWhisper(data); break;
+				case 0xC33F: _cMove(data); break;
+				case 0xEA79: _cLockon(data); break;
 				default: PacketArgs.unknown = true; break;
 			}
 
@@ -1055,6 +1064,35 @@ namespace TeraPacketEncryption {
 			});
 		}
 
+		private void _sLootWindow(byte[] data) { // 0xFDD2
+			var callback = sLootWindow;
+			if (callback == null) return;
+
+			/*
+			var numUnk = BitConverter.ToUInt16(data, 4);
+			var offsetUnk = BitConverter.ToUInt16(data, 6);
+
+			var unk = new List<uint>(numUnk);
+			while (offsetUnk > 0) {
+				unk.Add(BitConverter.ToUInt32(data, offsetUnk + 4));
+				offsetUnk = BitConverter.ToUInt16(data, offsetUnk + 2);
+			}
+			 */
+
+			callback(new sLootWindowArgs {
+				// num = UInt32(8)
+				// unk1 = Int32(12)
+				item = BitConverter.ToUInt32(data, 16),
+				// unk2 = Int32(20)
+				// unk3 = Int32(24)
+				// unk4 = data[28]
+				duration = BitConverter.ToInt32(data, 29),
+				// unk5 = data[33]
+				// unk6 = Int32(34)
+				// unk7 = unk
+			});
+		}
+
 		private void _sLootWon(byte[] data) { // 0x9943
 			var callback = sLootWon;
 			if (callback == null) return;
@@ -1073,17 +1111,57 @@ namespace TeraPacketEncryption {
 			});
 		}
 
+		private void _cMove(byte[] data) { // 0xC33F
+			var callback = cMove;
+			if (callback == null) return;
+
+			callback(new cMoveArgs {
+				pos1 = new Position {
+					X = BitConverter.ToSingle(data, 4),
+					Y = BitConverter.ToSingle(data, 8),
+					Z = BitConverter.ToSingle(data, 12),
+				},
+				angle = BitConverter.ToInt16(data, 16),
+				pos2 = new Position {
+					X = BitConverter.ToSingle(data, 18),
+					Y = BitConverter.ToSingle(data, 22),
+					Z = BitConverter.ToSingle(data, 26),
+				},
+				// unk
+			});
+		}
+
+		private void _cWhisper(byte[] data) { // 0x7932
+			var callback = cWhisper;
+			if (callback == null) return;
+
+			callback(new cWhisperArgs {
+				target = GetString(data, BitConverter.ToUInt16(data, 4), 64),
+				message = GetString(data, BitConverter.ToUInt16(data, 6), 512)
+			});
+		}
+
 		private void CParseYield(byte[] data) { // 0xF215
 			//WriteEvent("cYield", "");
 		}
 
-		private void CParseTargetSelect(byte[] data) { // 0x685D
-			ulong target = BitConverter.ToUInt64(data, 4);
+		private void _cTarget(byte[] data) { // 0x685D
+			var callback = cTarget;
+			if (callback == null) return;
+
+			callback(new cTargetArgs {
+				target = BitConverter.ToUInt64(data, 4)
+			});
 		}
 
-		private void CParseLockon(byte[] data) { // 0xEA79
-			ulong target = BitConverter.ToUInt64(data, 4);
-			uint attack = BitConverter.ToUInt32(data, 12);
+		private void _cLockon(byte[] data) { // 0xEA79
+			var callback = cLockon;
+			if (callback == null) return;
+
+			callback(new cLockonArgs {
+				target = BitConverter.ToUInt64(data, 4),
+				attack = BitConverter.ToUInt32(data, 12)
+			});
 		}
 	}
 }
