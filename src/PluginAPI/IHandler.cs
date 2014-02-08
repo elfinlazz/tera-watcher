@@ -11,6 +11,7 @@ namespace TeraWatcherAPI {
 		event sAbnormalRemoveHandler sAbnormalRemove;
 		event sAbnormalUpdateHandler sAbnormalUpdate;
 		event sAbsorbDamageHandler sAbsorbDamage;
+		event sAttackEndHandler sAttackEnd;
 		event sAttackResultHandler sAttackResult;
 		event sAttackStartHandler sAttackStart;
 		event sChatMessageHandler sChatMessage;
@@ -55,6 +56,7 @@ namespace TeraWatcherAPI {
 		event sProjectedAttackRemoveHandler sProjectedAttackRemove;
 		event sProjectileHandler sProjectile;
 		event sProjectileRemoveHandler sProjectileRemove;
+		event sSelfInfoHandler sSelfInfo;
 		event sSelfStaminaHandler sSelfStamina;
 		event sSystemMessageHandler sSystemMessage;
 		event sTargetInfoHandler sTargetInfo;

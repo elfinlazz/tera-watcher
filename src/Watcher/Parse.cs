@@ -19,6 +19,7 @@ namespace TeraPacketEncryption {
 		public event sAbnormalRemoveHandler sAbnormalRemove;
 		public event sAbnormalUpdateHandler sAbnormalUpdate;
 		public event sAbsorbDamageHandler sAbsorbDamage;
+		public event sAttackEndHandler sAttackEnd;
 		public event sAttackResultHandler sAttackResult;
 		public event sAttackStartHandler sAttackStart;
 		public event sChatMessageHandler sChatMessage;
@@ -63,6 +64,7 @@ namespace TeraPacketEncryption {
 		public event sProjectedAttackRemoveHandler sProjectedAttackRemove;
 		public event sProjectileHandler sProjectile;
 		public event sProjectileRemoveHandler sProjectileRemove;
+		public event sSelfInfoHandler sSelfInfo;
 		public event sSelfStaminaHandler sSelfStamina;
 		public event sSystemMessageHandler sSystemMessage;
 		public event sTargetInfoHandler sTargetInfo;
@@ -93,7 +95,6 @@ namespace TeraPacketEncryption {
 
 			switch (opCode) {
 				//case 0x8568: ParsePartyMemberMove(data); break;
-				//case 0xD6FA: ParseSelfInfo(data); break;
 				//case 0xE570: ParseMinionDeath(data); break;
 				case 0x530A: _sImage(data); break;
 				case 0x53B2: _sPlayerInfo(data); break;
@@ -140,6 +141,7 @@ namespace TeraPacketEncryption {
 				case 0xD1F5: _sNpcHp(data); break;
 				case 0xD46C: _sPartyAbnormalUpdate(data); break;
 				case 0xD65E: _sProjectedAttackRemove(data); break;
+				case 0xD6FA: _sSelfInfo(data); break;
 				case 0xE0FA: _sPartyAbnormalList(data); break;
 				case 0xE1B2: _sNpcCombatStatus(data); break;
 				case 0xE628: _sUpdateHp(data); break;
@@ -199,22 +201,37 @@ namespace TeraPacketEncryption {
 			return result;
 		}
 
-		private void ParseSelfInfo(byte[] data) { // 0xD6FA
-			/*
-			Self = BitConverter.ToUInt64(data, 18);
+		private void _sSelfInfo(byte[] data) { // 0xD6FA
+			var callback = sSelfInfo;
+			if (callback == null) return;
 
-			var Player = new Player();
-			Player.UID = Self;
-			Player.Name = GetString(data, 265, NAME_CHAR_MAX_LENGTH);
-			GetClassAndRace(data, 14, ref Player);
+			var nameOffset = BitConverter.ToUInt16(data, 4);
+			var details1Offset = BitConverter.ToUInt16(data, 6);
+			var details1Length = BitConverter.ToUInt16(data, 8);
+			var details2Offset = BitConverter.ToUInt16(data, 10);
+			var details2Length = BitConverter.ToUInt16(data, 12);
 
-			Players[Self] = Player;
+			var appearance = new byte[8];
+			Array.Copy(data, 51, appearance, 0, 8);
 
-			WriteEvent("sSelfInfo", String.Format("\"cID\": {0}, \"name\": {1}, \"type\": {2}",
-				Player.UID,
-				GetJson(Player.Name),
-				BitConverter.ToUInt32(data, 14)));
-			 */
+			var details1 = new byte[details1Length];
+			Array.Copy(data, details1Offset, details1, 0, details1Length);
+
+			var details2 = new byte[details1Length];
+			Array.Copy(data, details2Offset, details2, 0, details2Length);
+
+			callback(new sSelfInfoArgs {
+				model = BitConverter.ToUInt32(data, 14),
+				cid = BitConverter.ToUInt64(data, 18),
+				pid = BitConverter.ToUInt64(data, 26),
+				// unk
+				appearance = appearance,
+				// unk
+				level = BitConverter.ToInt16(data, 61),
+				name = GetString(data, nameOffset, NAME_CHAR_MAX_LENGTH),
+				details1 = details1,
+				details2 = details2,
+			});
 		}
 
 		private void _sGuildInfo(byte[] data) { // 0xF2DB
@@ -322,6 +339,40 @@ namespace TeraPacketEncryption {
 		}
 
 		private void _sAttackEnd(byte[] data) { // 0xB470
+			var callback = sAttackEnd;
+			if (callback == null) return;
+
+			var numTargets = BitConverter.ToUInt16(data, 8);
+			var offsetTargets = BitConverter.ToUInt16(data, 10);
+			var numPositions = BitConverter.ToUInt16(data, 12);
+			var offsetPositions = BitConverter.ToUInt16(data, 12);
+
+			var targets = new List<ulong>(numTargets);
+			var positions = new List<Position>(numPositions);
+
+			while (offsetTargets > 0) {
+				// unk <- Int32(offs + 4)
+				targets.Add(BitConverter.ToUInt64(data, offsetTargets + 8));
+				offsetTargets = BitConverter.ToUInt16(data, offsetTargets + 2);
+			}
+
+			while (offsetPositions > 0) {
+				positions.Add(new Position {
+					X = BitConverter.ToUInt64(data, offsetPositions + 4),
+					Y = BitConverter.ToUInt64(data, offsetPositions + 8),
+					Z = BitConverter.ToUInt64(data, offsetPositions + 12),
+				});
+				offsetPositions = BitConverter.ToUInt16(data, offsetPositions + 2);
+			}
+
+			callback(new sAttackEndArgs {
+				source = BitConverter.ToUInt64(data, 8),
+				model = BitConverter.ToUInt32(data, 16),
+				skill = BitConverter.ToUInt32(data, 20),
+				id = BitConverter.ToUInt32(data, 24),
+				targets = targets,
+				positions = positions
+			});
 		}
 
 		private void _sAttackResult(byte[] data) { // 0x94EF
