@@ -131,13 +131,13 @@ namespace Watcher {
 				}
 
 				if (fromServer) {
-					if (tcpPacket.SequenceNumber > ServerSeqNum) {
-						Console.WriteLine("out-of-order packet {0} (expected {1}) :: queue -> {2}", tcpPacket.SequenceNumber, ServerSeqNum, TcpBuffer.Count + 1);
-						TcpBuffer.Enqueue(tcpPacket, tcpPacket.SequenceNumber);
-						return;
-					}
+					while (tcpPacket != null) {
+						if (tcpPacket.SequenceNumber > ServerSeqNum) {
+							Console.WriteLine("out-of-order packet {0} (expected {1}) :: queue -> {2}", tcpPacket.SequenceNumber, ServerSeqNum, TcpBuffer.Count + 1);
+							TcpBuffer.Enqueue(tcpPacket, tcpPacket.SequenceNumber);
+							return;
+						}
 
-					while (tcpPacket != null && tcpPacket.SequenceNumber <= ServerSeqNum) {
 						data = tcpPacket.PayloadData;
 						length = data.Length;
 
