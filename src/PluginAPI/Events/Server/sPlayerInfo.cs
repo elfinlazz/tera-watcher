@@ -10,6 +10,7 @@ namespace TeraWatcherAPI.Events {
 		public short angle;
 		public int relation;
 		public uint model;
+		public int level;
 		public byte[] appearance;
 		public string name;
 		public string guild;

@@ -320,6 +320,7 @@ namespace Watcher {
 				angle = BitConverter.ToInt16(data, 50),
 				relation = BitConverter.ToInt32(data, 52),
 				model = BitConverter.ToUInt32(data, 56),
+				level = BitConverter.ToInt32(data, 169),
 				appearance = appearance,
 				name = name,
 				guild = guild,
