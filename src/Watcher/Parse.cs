@@ -287,17 +287,27 @@ namespace Watcher {
 			ushort nameOffset = BitConverter.ToUInt16(data, 4);
 			ushort guildOffset = BitConverter.ToUInt16(data, 6);
 			ushort guildRankOffset = BitConverter.ToUInt16(data, 8);
-			// unk1Offset <- UInt16(..., 10)
-			// unk1Length <- UInt16(..., 12) = [20 00]
+			ushort details1Offset = BitConverter.ToUInt16(data, 10);
+			ushort details1Length = BitConverter.ToUInt16(data, 12);
 			ushort guildTitleOffset = BitConverter.ToUInt16(data, 14);
 			ushort guildEmblemOffset = BitConverter.ToUInt16(data, 16);
-			// unk2Offset <- UInt16(..., 18)
-			// unk2Length <- UInt16(..., 20)
+			ushort details2Offset = BitConverter.ToUInt16(data, 18);
+			ushort details2Length = BitConverter.ToUInt16(data, 20);
+			
 			string name = GetString(data, nameOffset, NAME_CHAR_MAX_LENGTH);
 			string guild = GetString(data, guildOffset, NAME_GUILD_MAX_LENGTH);
 			string guildRank = GetString(data, guildRankOffset, NAME_GUILDRANK_MAX_LENGTH);
 			string guildTitle = GetString(data, guildTitleOffset, NAME_GUILDRANK_MAX_LENGTH);
 			string guildEmblem = GetString(data, guildEmblemOffset, 64);
+
+			var appearance = new byte[8];
+			Array.Copy(data, 72, appearance, 0, 8);
+
+			var details1 = new byte[details1Length];
+			Array.Copy(data, details1Offset, details1, 0, details1Length);
+
+			var details2 = new byte[details2Length];
+			Array.Copy(data, details2Offset, details2, 0, details2Length);
 
 			callback(new sPlayerInfoArgs {
 				pid = BitConverter.ToUInt64(data, 22),
@@ -310,11 +320,14 @@ namespace Watcher {
 				angle = BitConverter.ToInt16(data, 50),
 				relation = BitConverter.ToInt32(data, 52),
 				model = BitConverter.ToUInt32(data, 56),
+				appearance = appearance,
 				name = name,
 				guild = guild,
 				guildRank = guildRank,
+				details1 = details1,
 				guildTitle = guildTitle,
-				guildEmblem = guildEmblem
+				guildEmblem = guildEmblem,
+				details2 = details2
 			});
 		}
 
