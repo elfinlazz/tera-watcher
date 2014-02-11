@@ -17,7 +17,7 @@ namespace Watcher {
 		}
 
 		public void Enqueue(T item, uint priority) {
-			_list.Add(priority, item);
+			_list[priority] = item; // assume new data is better
 		}
 
 		public T Dequeue() {
