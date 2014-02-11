@@ -10,6 +10,8 @@ namespace Watcher {
 	class Capture {
 		protected Parse Parse;
 		protected Session Session;
+		protected ushort ClientPort;
+		protected ulong LastPacketTime;
 		protected IPAddress ServerAddress;
 		protected int State;
 		protected uint ServerSeqNum;
@@ -48,6 +50,7 @@ namespace Watcher {
 
 		private void Reset() {
 			State = -1;
+			ClientPort = 0;
 			Session = new Session();
 			ServerBuffer = new byte[0];
 			ClientBuffer = new byte[0];
@@ -94,7 +97,19 @@ namespace Watcher {
 					.Extract(typeof(PacketDotNet.TcpPacket)) as PacketDotNet.TcpPacket;
 
 			if (tcpPacket != null) {
-				var fromServer = (tcpPacket.SourcePort == 10001); // hacky
+				var ipPacket = (PacketDotNet.IpPacket)tcpPacket.ParentPacket;
+				var fromServer = ServerAddress.Equals(ipPacket.SourceAddress);
+				var localPort = (fromServer ? tcpPacket.DestinationPort : tcpPacket.SourcePort);
+
+				if (localPort != ClientPort) {
+					if (ClientPort != 0 && Packet.Timeval.Seconds < LastPacketTime + 10) {
+						// might be multiboxing, so let's completely ignore this packet
+						return;
+					}
+				}
+
+				LastPacketTime = Packet.Timeval.Seconds;
+
 				var data = tcpPacket.PayloadData;
 				var length = data.Length;
 
@@ -125,6 +140,7 @@ namespace Watcher {
 					// check for "01 00 00 00"
 					if (length == 4 && BitConverter.ToUInt32(data, 0) == 0x01) {
 						ServerSeqNum = tcpPacket.SequenceNumber + 4;
+						ClientPort = localPort;
 						State = 0;
 					}
 					return;
