@@ -49,6 +49,8 @@
     <Compile Include="Events\Client\cTarget.cs" />
     <Compile Include="Events\Client\cWhisper.cs" />
     <Compile Include="Events\gPacket.cs" />
+    <Compile Include="Events\Server\sNpcUnload.cs" />
+    <Compile Include="Events\Server\sAnimate.cs" />
     <Compile Include="Events\Server\sSelfInfo.cs" />
     <Compile Include="Events\Server\sAttackEnd.cs" />
     <Compile Include="Events\Server\sNpcInfo.cs" />

@@ -19,6 +19,7 @@ namespace Watcher {
 		public event sAbnormalRemoveHandler sAbnormalRemove;
 		public event sAbnormalUpdateHandler sAbnormalUpdate;
 		public event sAbsorbDamageHandler sAbsorbDamage;
+		public event sAnimateHandler sAnimate;
 		public event sAttackEndHandler sAttackEnd;
 		public event sAttackResultHandler sAttackResult;
 		public event sAttackStartHandler sAttackStart;
@@ -44,6 +45,7 @@ namespace Watcher {
 		public event sNpcHpHandler sNpcHp;
 		public event sNpcInfoHandler sNpcInfo;
 		public event sNpcStatusHandler sNpcStatus;
+		public event sNpcUnloadHandler sNpcUnload;
 		public event sPartyAbnormalAddHandler sPartyAbnormalAdd;
 		public event sPartyAbnormalListHandler sPartyAbnormalList;
 		public event sPartyAbnormalRemoveHandler sPartyAbnormalRemove;
@@ -103,6 +105,7 @@ namespace Watcher {
 				case 0x671E: _sConditionRemove(data); break;
 				case 0x6827: _sPartyConditionAdd(data); break;
 				case 0x696F: _sSystemMessage(data); break;
+				case 0x7603: _sAnimate(data); break;
 				case 0x7695: _sPartyUpdate(data); break;
 				case 0x7C3B: _sProjectileRemove(data); break;
 				case 0x7D18: _sLockon(data); break;
@@ -136,6 +139,7 @@ namespace Watcher {
 				case 0xC50B: _sPartyList(data); break;
 				case 0xC513: _sProjectedAttack(data); break;
 				case 0xCCD0: _sPartyUpdateHp(data); break;
+				case 0xCD61: _sNpcUnload(data); break;
 				case 0xCE77: _sUpdateRe(data); break;
 				case 0xCEA4: _sPartyConditionRemove(data); break;
 				case 0xD1F5: _sNpcHp(data); break;
@@ -1221,6 +1225,29 @@ namespace Watcher {
 
 			callback(new sLootRemoveArgs {
 				id = BitConverter.ToUInt64(data, 4)
+			});
+		}
+
+		private void _sAnimate(byte[] data) { // 0x7603
+			var callback = sAnimate;
+			if (callback == null) return;
+
+			callback(new sAnimateArgs {
+				target = BitConverter.ToUInt64(data, 4),
+				animation = BitConverter.ToInt32(data, 12),
+				unk1 = BitConverter.ToInt32(data, 16),
+				unk2 = data[20]
+			});
+		}
+
+		private void _sNpcUnload(byte[] data) { // 0xCD61
+			var callback = sNpcUnload;
+			if (callback == null) return;
+
+			callback(new sNpcUnloadArgs {
+				target = BitConverter.ToUInt64(data, 4),
+				unk1 = BitConverter.ToInt32(data, 12),
+				unk2 = data[16]
 			});
 		}
 
