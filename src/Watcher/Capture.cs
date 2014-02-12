@@ -206,6 +206,8 @@ namespace Watcher {
 						Array.Resize(ref data, length);
 					}
 
+					ClientSeqNum += (uint)length;
+
 					if (State == 2) Session.Decrypt(ref data);
 					AppendBuffer(ref ClientBuffer, data);
 					while (ProcessClientData());
