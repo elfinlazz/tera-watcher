@@ -115,13 +115,13 @@ namespace Watcher {
 
 				// handle TCP SYN (connection started)
 				if (tcpPacket.Syn) {
-					if (fromServer) {
+					if (!fromServer) {
 						Console.WriteLine("<connection started>");
 						Reset();
-						ServerSeqNum = tcpPacket.SequenceNumber + 1;
+						ClientSeqNum = tcpPacket.SequenceNumber + 1;
 						ClientPort = localPort;
 					} else {
-						ClientSeqNum = tcpPacket.SequenceNumber + 1;
+						ServerSeqNum = tcpPacket.SequenceNumber + 1;
 					}
 					return;
 				}
