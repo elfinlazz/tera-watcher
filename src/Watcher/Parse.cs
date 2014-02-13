@@ -221,7 +221,7 @@ namespace Watcher {
 			var details1 = new byte[details1Length];
 			Array.Copy(data, details1Offset, details1, 0, details1Length);
 
-			var details2 = new byte[details1Length];
+			var details2 = new byte[details2Length];
 			Array.Copy(data, details2Offset, details2, 0, details2Length);
 
 			callback(new sSelfInfoArgs {
