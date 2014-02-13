@@ -119,6 +119,7 @@ namespace Watcher {
 						Console.WriteLine("<connection started>");
 						Reset();
 						ServerSeqNum = tcpPacket.SequenceNumber + 1;
+						ClientPort = localPort;
 					} else {
 						ClientSeqNum = tcpPacket.SequenceNumber + 1;
 					}
@@ -140,7 +141,6 @@ namespace Watcher {
 					// check for "01 00 00 00"
 					if (length == 4 && BitConverter.ToUInt32(data, 0) == 0x01) {
 						ServerSeqNum = tcpPacket.SequenceNumber + 4;
-						ClientPort = localPort;
 						State = 0;
 					}
 					return;
