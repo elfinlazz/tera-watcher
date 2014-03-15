@@ -15,11 +15,11 @@ namespace Logger {
 		public Plugin() {
 			Filters = new HashSet<ushort> {
 				// Server Packets
-				0xED02, // sPlayerMove
-				0xF275, // (alliance crud)
+				0xE04F, // sPlayerMove
+				0x5C0D, // (alliance crud)
 
 				// Client Packets
-				0xC33F, // cMove
+				0xB3F3, // cMove
 			};
 			ShowKnown = true;
 
