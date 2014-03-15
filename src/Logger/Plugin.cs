@@ -17,6 +17,7 @@ namespace Logger {
 				// Server Packets
 				0xE04F, // sPlayerMove
 				0x5C0D, // (alliance crud)
+				//0x5FA9, // LFG
 
 				// Client Packets
 				0xB3F3, // cMove

@@ -201,7 +201,7 @@ namespace Watcher {
 			return result;
 		}
 
-		private void _sSelfInfo(byte[] data) { // 0xD6FA
+		private void _sSelfInfo(byte[] data) {
 			var callback = sSelfInfo;
 			if (callback == null) return;
 
@@ -234,7 +234,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sGuildInfo(byte[] data) { // 0xF2DB
+		private void _sGuildInfo(byte[] data) {
 			var callback = sGuildInfo;
 			if (callback == null) return;
 
@@ -269,7 +269,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sSelfStamina(byte[] data) { // 0xF471
+		private void _sSelfStamina(byte[] data) {
 			var callback = sSelfStamina;
 			if (callback == null) return;
 
@@ -280,7 +280,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPlayerInfo(byte[] data) { // 0x53B2
+		private void _sPlayerInfo(byte[] data) {
 			var callback = sPlayerInfo;
 			if (callback == null) return;
 
@@ -332,7 +332,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAttackStart(byte[] data) { // 0xF22C
+		private void _sAttackStart(byte[] data) {
 			var callback = sAttackStart;
 			if (callback == null) return;
 
@@ -352,7 +352,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAttackEnd(byte[] data) { // 0xB470
+		private void _sAttackEnd(byte[] data) {
 			var callback = sAttackEnd;
 			if (callback == null) return;
 
@@ -389,7 +389,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAttackResult(byte[] data) { // 0x94EF
+		private void _sAttackResult(byte[] data) {
 			var callback = sAttackResult;
 			if (callback == null) return;
 
@@ -409,7 +409,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sUpdateHp(byte[] data) { // 0xE628
+		private void _sUpdateHp(byte[] data) {
 			var callback = sUpdateHp;
 			if (callback == null) return;
 
@@ -424,7 +424,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sUpdateMp(byte[] data) { // 0xBAAB
+		private void _sUpdateMp(byte[] data) {
 			var callback = sUpdateMp;
 			if (callback == null) return;
 
@@ -438,7 +438,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sUpdateRe(byte[] data) { // 0xCE77
+		private void _sUpdateRe(byte[] data) {
 			var callback = sUpdateRe;
 			if (callback == null) return;
 
@@ -451,7 +451,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAbnormalAdd(byte[] data) { // 0x9CAE
+		private void _sAbnormalAdd(byte[] data) {
 			var callback = sAbnormalAdd;
 			if (callback == null) return;
 
@@ -467,7 +467,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAbnormalUpdate(byte[] data) { // 0x96D0
+		private void _sAbnormalUpdate(byte[] data) {
 			var callback = sAbnormalUpdate;
 			if (callback == null) return;
 
@@ -482,7 +482,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAbnormalRemove(byte[] data) { // 0xC280
+		private void _sAbnormalRemove(byte[] data) {
 			var callback = sAbnormalRemove;
 			if (callback == null) return;
 
@@ -492,7 +492,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyAbnormalAdd(byte[] data) { // 0xA13E
+		private void _sPartyAbnormalAdd(byte[] data) {
 			var callback = sPartyAbnormalAdd;
 			if (callback == null) return;
 
@@ -507,7 +507,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyAbnormalUpdate(byte[] data) { // 0xD46C
+		private void _sPartyAbnormalUpdate(byte[] data) {
 			var callback = sPartyAbnormalUpdate;
 			if (callback == null) return;
 
@@ -522,7 +522,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyAbnormalRemove(byte[] data) { // 0xB426
+		private void _sPartyAbnormalRemove(byte[] data) {
 			var callback = sPartyAbnormalRemove;
 			if (callback == null) return;
 
@@ -532,17 +532,18 @@ namespace Watcher {
 			});
 		}
 
-		private void _sCombatStatus(byte[] data) { // 0xA3E2
+		private void _sCombatStatus(byte[] data) {
 			var callback = sCombatStatus;
 			if (callback == null) return;
 
 			callback(new sCombatStatusArgs {
 				target = BitConverter.ToUInt64(data, 4),
 				status = BitConverter.ToUInt32(data, 12) // 0 = out, 1 = in, 2 = rest
+				// unk -> 1 byte
 			});
 		}
 
-		private void _sLifeStatus(byte[] data) { // 0x9C09
+		private void _sLifeStatus(byte[] data) {
 			var callback = sLifeStatus;
 			if (callback == null) return;
 
@@ -558,7 +559,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAbsorbDamage(byte[] data) { // 0x8DD4
+		private void _sAbsorbDamage(byte[] data) {
 			var callback = sAbsorbDamage;
 			if (callback == null) return;
 
@@ -568,7 +569,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sConditionList(byte[] data) { // 0xB7F5
+		private void _sConditionList(byte[] data) {
 			var callback = sConditionList;
 			if (callback == null) return;
 
@@ -591,7 +592,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sTargetInfo(byte[] data) { // 0x63B2
+		private void _sTargetInfo(byte[] data) {
 			var callback = sTargetInfo;
 			if (callback == null) return;
 
@@ -625,6 +626,7 @@ namespace Watcher {
 			callback(new sTargetInfoArgs {
 				target = BitConverter.ToUInt64(data, 12),
 				hp = BitConverter.ToSingle(data, 20),
+				// unk -> 4
 				level = BitConverter.ToUInt32(data, 28),
 				// unk -> 4
 				// unk -> 4
@@ -638,7 +640,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyAbnormalList(byte[] data) { // 0xE0FA
+		private void _sPartyAbnormalList(byte[] data) {
 			var callback = sPartyAbnormalList;
 			if (callback == null) return;
 
@@ -676,7 +678,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sConditionAdd(byte[] data) { // 0xC24B
+		private void _sConditionAdd(byte[] data) {
 			var callback = sConditionAdd;
 			if (callback == null) return;
 
@@ -690,7 +692,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sConditionActivate(byte[] data) { // 0x9EE7
+		private void _sConditionActivate(byte[] data) {
 			var callback = sConditionActivate;
 			if (callback == null) return;
 
@@ -699,7 +701,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sConditionRemove(byte[] data) { // 0x671E
+		private void _sConditionRemove(byte[] data) {
 			var callback = sConditionRemove;
 			if (callback == null) return;
 
@@ -708,7 +710,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyConditionAdd(byte[] data) { // 0x6827
+		private void _sPartyConditionAdd(byte[] data) {
 			var callback = sPartyConditionAdd;
 			if (callback == null) return;
 
@@ -716,13 +718,13 @@ namespace Watcher {
 				target = BitConverter.ToUInt64(data, 4),
 				condition = new Condition {
 					Id = BitConverter.ToUInt32(data, 12),
-					Status = data[16],
-					Duration = BitConverter.ToInt32(data, 17)
+					Duration = BitConverter.ToInt32(data, 16),
+					Status = data[20]
 				}
 			});
 		}
 
-		private void _sPartyConditionActivate(byte[] data) { // 0x61CE
+		private void _sPartyConditionActivate(byte[] data) {
 			var callback = sPartyConditionActivate;
 			if (callback == null) return;
 
@@ -732,7 +734,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyConditionRemove(byte[] data) { // 0xCEA4
+		private void _sPartyConditionRemove(byte[] data) {
 			var callback = sPartyConditionRemove;
 			if (callback == null) return;
 
@@ -742,7 +744,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sProjectile(byte[] data) { // 0xEB10
+		private void _sProjectile(byte[] data) {
 			var callback = sProjectile;
 			if (callback == null) return;
 
@@ -767,7 +769,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sProjectileRemove(byte[] data) { // 0x7C3B
+		private void _sProjectileRemove(byte[] data) {
 			var callback = sProjectileRemove;
 			if (callback == null) return;
 
@@ -777,7 +779,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sProjectedAttack(byte[] data) { // 0xC513
+		private void _sProjectedAttack(byte[] data) {
 			var callback = sProjectedAttack;
 			if (callback == null) return;
 
@@ -802,7 +804,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sProjectedAttackRemove(byte[] data) { // 0xD65E
+		private void _sProjectedAttackRemove(byte[] data) {
 			var callback = sProjectedAttackRemove;
 			if (callback == null) return;
 
@@ -812,7 +814,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyList(byte[] data) { // 0xC50B
+		private void _sPartyList(byte[] data) {
 			var callback = sPartyList;
 			if (callback == null) return;
 
@@ -855,14 +857,14 @@ namespace Watcher {
 		}
 
 		/*
-		private void ParsePartyMemberMove(byte[] data) { // 0x8568
+		private void ParsePartyMemberMove(byte[] data) {
 			ulong cUID = BitConverter.ToUInt64(data, 4);
 			int pos = BitConverter.ToInt32(data, 12);
 			Console.WriteLine("~~ {0} moved to position {1}", GetPlayerName(cUID), pos);
 		}
 		 */
 
-		private void _sPartyDeath(byte[] data) { // 0xAE97
+		private void _sPartyDeath(byte[] data) {
 			var callback = sPartyDeath;
 			if (callback == null) return;
 
@@ -871,7 +873,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyUpdate(byte[] data) { // 0x7695
+		private void _sPartyUpdate(byte[] data) {
 			var callback = sPartyUpdate;
 			if (callback == null) return;
 
@@ -892,7 +894,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyUpdateHp(byte[] data) { // 0xCCD0
+		private void _sPartyUpdateHp(byte[] data) {
 			var callback = sPartyUpdateHp;
 			if (callback == null) return;
 
@@ -903,7 +905,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyUpdateMp(byte[] data) { // 0x7DAF
+		private void _sPartyUpdateMp(byte[] data) {
 			var callback = sPartyUpdateMp;
 			if (callback == null) return;
 
@@ -914,7 +916,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyUpdateRe(byte[] data) { // 0xBB69
+		private void _sPartyUpdateRe(byte[] data) {
 			var callback = sPartyUpdateRe;
 			if (callback == null) return;
 
@@ -926,7 +928,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyInvitePriv(byte[] data) { // 0xF5A3
+		private void _sPartyInvitePriv(byte[] data) {
 			var callback = sPartyInvitePriv;
 			if (callback == null) return;
 
@@ -936,7 +938,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sPartyLeader(byte[] data) { // 0xBFCE
+		private void _sPartyLeader(byte[] data) {
 			var callback = sPartyLeader;
 			if (callback == null) return;
 
@@ -947,24 +949,24 @@ namespace Watcher {
 			});
 		}
 
-		private void _sNpcHp(byte[] data) { // 0xD1F5
+		private void _sNpcHp(byte[] data) {
 			var callback = sNpcHp;
 			if (callback == null) return;
 
 			callback(new sNpcHpArgs {
 				target = BitConverter.ToUInt64(data, 4),
 				hp = BitConverter.ToSingle(data, 12),
-				unk1 = data[16],
+				unk1 = data[16], // enemy?
 				edge = new Edge {
 					d = BitConverter.ToInt32(data, 17),
 					f = BitConverter.ToSingle(data, 21)
 				}
-				// unk2 <- 4 (14 00 00 00 = 8,000?)
+				// unk2 <- 4 (40 1F 00 00 = 8,000?)
 				// unk3 <- 4 (03 00 00 00)
 			});
 		}
 
-		private void _sNpcStatus(byte[] data) { // 0xA5EB
+		private void _sNpcStatus(byte[] data) {
 			var callback = sNpcStatus;
 			if (callback == null) return;
 
@@ -977,7 +979,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sNpcEmotion(byte[] data) { // 0x900F
+		private void _sNpcEmotion(byte[] data) {
 			var callback = sNpcEmotion;
 			if (callback == null) return;
 
@@ -988,7 +990,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sNpcInfo(byte[] data) { // 0xA7B4
+		private void _sNpcInfo(byte[] data) {
 			var callback = sNpcInfo;
 			if (callback == null) return;
 
@@ -1013,7 +1015,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sNpcCombatStatus(byte[] data) { // 0xE1B2
+		private void _sNpcCombatStatus(byte[] data) {
 			var callback = sNpcCombatStatus;
 			if (callback == null) return;
 
@@ -1023,18 +1025,7 @@ namespace Watcher {
 			});
 		}
 
-		/*
-		private void ParseMinionDeath(byte[] data) { // 0xE570
-			ulong uid = BitConverter.ToUInt64(data, 4);
-			// pos.x <- Single(..., 12)
-			// pos.y <- Single(..., 16)
-			// pos.z <- Single(..., 20)
-			// (unk?) <- UInt32(..., 24)
-			// (unk?) <- UInt32(..., 28)
-		}
-		 * */
-
-		private void _sChatMessage(byte[] data) { // 0xAD3D
+		private void _sChatMessage(byte[] data) {
 			var callback = sChatMessage;
 			if (callback == null) return;
 
@@ -1046,13 +1037,13 @@ namespace Watcher {
 				authorId = BitConverter.ToUInt64(data, 12),
 				unk1 = data[20],
 				gm = data[21],
-				unk2 = data[22], // own message?
+				unk2 = data[22],
 				authorName = GetString(data, senderOffset, NAME_CHAR_MAX_LENGTH),
 				message = GetString(data, messageOffset, 1023)
 			});
 		}
 
-		private void _sWhisper(byte[] data) { // 0x9D7B
+		private void _sWhisper(byte[] data) {
 			var callback = sWhisper;
 			if (callback == null) return;
 
@@ -1064,14 +1055,14 @@ namespace Watcher {
 				player = BitConverter.ToUInt64(data, 10),
 				unk1 = data[18],
 				gm = data[19],
-				unk2 = data[20], // own message?
+				unk2 = data[20],
 				author = GetString(data, authorOffset, NAME_CHAR_MAX_LENGTH),
 				recipient = GetString(data, recipientOffset, NAME_CHAR_MAX_LENGTH),
 				message = GetString(data, messageOffset, 1023)
 			});
 		}
 
-		private void _sSystemMessage(byte[] data) { // 0x696F
+		private void _sSystemMessage(byte[] data) {
 			var callback = sSystemMessage;
 			if (callback == null) return;
 
@@ -1088,7 +1079,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sImage(byte[] data) { // 0x530A
+		private void _sImage(byte[] data) {
 			var callback = sImage;
 			if (callback == null) return;
 
@@ -1105,7 +1096,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLockon(byte[] data) { // 0x7D18
+		private void _sLockon(byte[] data) {
 			var callback = sLockon;
 			if (callback == null) return;
 
@@ -1116,7 +1107,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootSpawn(byte[] data) { // 0xB2D7
+		private void _sLootSpawn(byte[] data) {
 			var callback = sLootSpawn;
 			if (callback == null) return;
 
@@ -1144,7 +1135,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootStatus(byte[] data) { // 0x907D
+		private void _sLootStatus(byte[] data) {
 			var callback = sLootStatus;
 			if (callback == null) return;
 
@@ -1154,7 +1145,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootReceived(byte[] data) { // 0xA070
+		private void _sLootReceived(byte[] data) {
 			var callback = sLootReceived;
 			if (callback == null) return;
 
@@ -1167,7 +1158,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootRoll(byte[] data) { // 0xEB44
+		private void _sLootRoll(byte[] data) {
 			var callback = sLootRoll;
 			if (callback == null) return;
 
@@ -1177,7 +1168,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootWindow(byte[] data) { // 0xFDD2
+		private void _sLootWindow(byte[] data) {
 			var callback = sLootWindow;
 			if (callback == null) return;
 
@@ -1206,7 +1197,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootWon(byte[] data) { // 0x9943
+		private void _sLootWon(byte[] data) {
 			var callback = sLootWon;
 			if (callback == null) return;
 
@@ -1215,7 +1206,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sLootRemove(byte[] data) { // 0xF671
+		private void _sLootRemove(byte[] data) {
 			var callback = sLootRemove;
 			if (callback == null) return;
 
@@ -1224,7 +1215,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAnimate(byte[] data) { // 0x7603
+		private void _sAnimate(byte[] data) {
 			var callback = sAnimate;
 			if (callback == null) return;
 
@@ -1236,7 +1227,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _sNpcUnload(byte[] data) { // 0xCD61
+		private void _sNpcUnload(byte[] data) {
 			var callback = sNpcUnload;
 			if (callback == null) return;
 
@@ -1247,7 +1238,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _cMove(byte[] data) { // 0xC33F
+		private void _cMove(byte[] data) {
 			var callback = cMove;
 			if (callback == null) return;
 
@@ -1267,7 +1258,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _cWhisper(byte[] data) { // 0x7932
+		private void _cWhisper(byte[] data) {
 			var callback = cWhisper;
 			if (callback == null) return;
 
@@ -1277,11 +1268,7 @@ namespace Watcher {
 			});
 		}
 
-		private void CParseYield(byte[] data) { // 0xF215
-			//WriteEvent("cYield", "");
-		}
-
-		private void _cTarget(byte[] data) { // 0x685D
+		private void _cTarget(byte[] data) {
 			var callback = cTarget;
 			if (callback == null) return;
 
@@ -1290,7 +1277,7 @@ namespace Watcher {
 			});
 		}
 
-		private void _cLockon(byte[] data) { // 0xEA79
+		private void _cLockon(byte[] data) {
 			var callback = cLockon;
 			if (callback == null) return;
 
