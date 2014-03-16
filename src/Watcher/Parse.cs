@@ -21,6 +21,7 @@ namespace Watcher {
 		public event sAbsorbDamageHandler sAbsorbDamage;
 		public event sAnimateHandler sAnimate;
 		public event sAttackEndHandler sAttackEnd;
+		public event sAttackHomingHandler sAttackHoming;
 		public event sAttackResultHandler sAttackResult;
 		public event sAttackStartHandler sAttackStart;
 		public event sChatMessageHandler sChatMessage;
@@ -29,10 +30,15 @@ namespace Watcher {
 		public event sConditionAddHandler sConditionAdd;
 		public event sConditionListHandler sConditionList;
 		public event sConditionRemoveHandler sConditionRemove;
+		public event sCooldownItemHandler sCooldownItem;
+		public event sCooldownSkillHandler sCooldownSkill;
+		public event sGlyphsHandler sGlyphs;
 		public event sGuildInfoHandler sGuildInfo;
 		public event sImageHandler sImage;
 		public event sLifeStatusHandler sLifeStatus;
+		public event sLockedOnHandler sLockedOn;
 		public event sLockonHandler sLockon;
+		public event sLootQueueHandler sLootQueue;
 		public event sLootReceivedHandler sLootReceived;
 		public event sLootRemoveHandler sLootRemove;
 		public event sLootRollHandler sLootRoll;
@@ -73,12 +79,14 @@ namespace Watcher {
 		public event sUpdateHpHandler sUpdateHp;
 		public event sUpdateMpHandler sUpdateMp;
 		public event sUpdateReHandler sUpdateRe;
+		public event sUpdateStatsHandler sUpdateStats;
 		public event sWhisperHandler sWhisper;
 
 		public event gPacketHandler cPacket;
 
 		public event cLockonHandler cLockon;
 		public event cMoveHandler cMove;
+		public event cSetGlyphsHandler cSetGlyphs;
 		public event cTargetHandler cTarget;
 		public event cWhisperHandler cWhisper;
 
@@ -101,7 +109,8 @@ namespace Watcher {
 				case 0x6668: _sAbnormalUpdate(data); break;
 				case 0xCE49: _sAbsorbDamage(data); break;
 				case 0xC391: _sAnimate(data); break;
-				case 0xC581: _sAttackEnd(data); break;
+				case 0xBD95: _sAttackEnd(data); break;
+				case 0xC581: _sAttackHoming(data); break;
 				case 0xA06C: _sAttackResult(data); break;
 				case 0xAB46: _sAttackStart(data); break;
 				case 0xA84B: _sChatMessage(data); break;
@@ -110,10 +119,15 @@ namespace Watcher {
 				case 0xE91C: _sConditionAdd(data); break;
 				case 0xA77A: _sConditionList(data); break;
 				case 0xA979: _sConditionRemove(data); break;
+				case 0xC693: _sCooldownItem(data); break;
+				case 0xA43D: _sCooldownSkill(data); break;
+				case 0x8FBE: _sGlyphs(data); break;
 				case 0xCE0E: _sGuildInfo(data); break;
 				case 0x997D: _sImage(data); break;
 				case 0xE583: _sLifeStatus(data); break;
+				case 0xDDB2: _sLockedOn(data); break;
 				case 0xF200: _sLockon(data); break;
+				case 0x6556: _sLootQueue(data); break;
 				case 0xCDA6: _sLootReceived(data); break;
 				case 0xFB17: _sLootRemove(data); break;
 				case 0x8C9D: _sLootRoll(data); break;
@@ -126,6 +140,7 @@ namespace Watcher {
 				case 0xFBB1: _sNpcHp(data); break;
 				case 0xC84B: _sNpcInfo(data); break;
 				case 0x9730: _sNpcStatus(data); break;
+				case 0x541F: _sNpcUnload(data); break;
 				case 0xADD9: _sPartyAbnormalAdd(data); break;
 				case 0xCC23: _sPartyAbnormalList(data); break;
 				case 0x8289: _sPartyAbnormalRemove(data); break;
@@ -153,6 +168,7 @@ namespace Watcher {
 				case 0x99C6: _sUpdateHp(data); break;
 				case 0xBD7F: _sUpdateMp(data); break;
 				case 0xBD41: _sUpdateRe(data); break;
+				case 0x69D2: _sUpdateStats(data); break;
 				case 0xE8D8: _sWhisper(data); break;
 				default: PacketArgs.unknown = true; break;
 			}
@@ -168,10 +184,11 @@ namespace Watcher {
 			};
 
 			switch (opCode) {
+				case 0xDCDA: _cLockon(data); break;
+				case 0xB3F3: _cMove(data); break;
+				case 0x5207: _cSetGlyphs(data); break;
 				case 0xD50E: _cTarget(data); break;
 				case 0x88BC: _cWhisper(data); break;
-				case 0xB3F3: _cMove(data); break;
-				case 0xDCDA: _cLockon(data); break;
 				default: PacketArgs.unknown = true; break;
 			}
 
@@ -352,8 +369,8 @@ namespace Watcher {
 			});
 		}
 
-		private void _sAttackEnd(byte[] data) {
-			var callback = sAttackEnd;
+		private void _sAttackHoming(byte[] data) {
+			var callback = sAttackHoming;
 			if (callback == null) return;
 
 			var numTargets = BitConverter.ToUInt16(data, 8);
@@ -379,7 +396,7 @@ namespace Watcher {
 				offsetPositions = BitConverter.ToUInt16(data, offsetPositions + 2);
 			}
 
-			callback(new sAttackEndArgs {
+			callback(new sAttackHomingArgs {
 				source = BitConverter.ToUInt64(data, 8),
 				model = BitConverter.ToUInt32(data, 16),
 				skill = BitConverter.ToUInt32(data, 20),
@@ -1233,8 +1250,160 @@ namespace Watcher {
 
 			callback(new sNpcUnloadArgs {
 				target = BitConverter.ToUInt64(data, 4),
+				position = new Position {
+					X = BitConverter.ToSingle(data, 12),
+					Y = BitConverter.ToSingle(data, 16),
+					Z = BitConverter.ToSingle(data, 20)
+				},
+				type = BitConverter.ToUInt32(data, 24),
+				unk = BitConverter.ToInt32(data, 28)
+			});
+		}
+
+		private void _sAttackEnd(byte[] data) {
+			var callback = sAttackEnd;
+			if (callback == null) return;
+
+			callback(new sAttackEndArgs {
+				source = BitConverter.ToUInt64(data, 4),
+				position = new Position {
+					X = BitConverter.ToSingle(data, 12),
+					Y = BitConverter.ToSingle(data, 16),
+					Z = BitConverter.ToSingle(data, 20)
+				},
+				angle = BitConverter.ToInt16(data, 24),
+				model = BitConverter.ToUInt32(data, 26),
+				skill = BitConverter.ToUInt32(data, 30),
+				// unk = BitConverter.ToInt32(data, 34),
+				id = BitConverter.ToUInt32(data, 38),
+			});
+		}
+		
+		private void _sCooldownItem(byte[] data) {
+			var callback = sCooldownItem;
+			if (callback == null) return;
+
+			callback(new sCooldownItemArgs {
+				item = BitConverter.ToUInt32(data, 4),
+				cooldown = BitConverter.ToInt32(data, 8)
+			});
+		}
+		
+		private void _sCooldownSkill(byte[] data) {
+			var callback = sCooldownSkill;
+			if (callback == null) return;
+
+			callback(new sCooldownSkillArgs {
+				skill = BitConverter.ToUInt32(data, 4),
+				cooldown = BitConverter.ToInt32(data, 8)
+			});
+		}
+		
+		private void _sGlyphs(byte[] data) {
+			var callback = sGlyphs;
+			if (callback == null) return;
+
+			ushort count = BitConverter.ToUInt16(data, 4);
+			ushort offset = BitConverter.ToUInt16(data, 6);
+
+			var glyphs = new Dictionary<uint, byte>(count);
+			while (offset > 0) {
+				var id = BitConverter.ToUInt32(data, offset + 4);
+				var enabled = data[offset + 8];
+				glyphs[id] = enabled;
+				offset = BitConverter.ToUInt16(data, offset + 2);
+			}
+
+			callback(new sGlyphsArgs {
+				glyphs = glyphs
+			});
+		}
+		
+		private void _sLockedOn(byte[] data) {
+			var callback = sLockedOn;
+			if (callback == null) return;
+
+			callback(new sLockedOnArgs {
+				source = BitConverter.ToUInt64(data, 4),
+				skill = BitConverter.ToUInt32(data, 12)
+			});
+		}
+		
+		private void _sLootQueue(byte[] data) {
+			var callback = sLootQueue;
+			if (callback == null) return;
+
+			callback(new sLootQueueArgs {
+				count = BitConverter.ToInt32(data, 4)
+			});
+		}
+		
+		private void _sUpdateStats(byte[] data) {
+			var callback = sUpdateStats;
+			if (callback == null) return;
+
+			callback(new sUpdateStatsArgs {
+				currentHp = BitConverter.ToInt32(data, 4),
+				currentMp = BitConverter.ToInt32(data, 8),
 				unk1 = BitConverter.ToInt32(data, 12),
-				unk2 = data[16]
+				maxHp = BitConverter.ToInt32(data, 16),
+				maxMp = BitConverter.ToInt32(data, 20),
+
+				basePower = BitConverter.ToInt32(data, 24),
+				baseEndurance = BitConverter.ToInt32(data, 28),
+				baseImpactFactor = BitConverter.ToInt32(data, 32),
+				baseBalanceFactor = BitConverter.ToInt32(data, 36),
+				baseMovementSpeed = BitConverter.ToInt16(data, 40),
+				baseUnkSpeed = BitConverter.ToInt16(data, 42),
+				baseAttackSpeed = BitConverter.ToInt16(data, 44),
+				baseCritRate = BitConverter.ToSingle(data, 46),
+				baseCritResist = BitConverter.ToSingle(data, 50),
+				baseCritPower = BitConverter.ToSingle(data, 54),
+				baseAttack = BitConverter.ToInt32(data, 58),
+				baseAttack2 = BitConverter.ToInt32(data, 62),
+				baseDefense = BitConverter.ToInt32(data, 66),
+				baseImpact = BitConverter.ToInt32(data, 70),
+				baseBalance = BitConverter.ToInt32(data, 74),
+				baseResistWeakening = BitConverter.ToSingle(data, 78),
+				baseResistPeriodic = BitConverter.ToSingle(data, 82),
+				baseResistStun = BitConverter.ToSingle(data, 86),
+
+				bonusPower = BitConverter.ToInt32(data, 90),
+				bonusEndurance = BitConverter.ToInt32(data, 94),
+				bonusImpactFactor = BitConverter.ToInt32(data, 98),
+				bonusBalanceFactor = BitConverter.ToInt32(data, 102),
+				bonusMovementSpeed = BitConverter.ToInt16(data, 106),
+				bonusUnkSpeed = BitConverter.ToInt16(data, 108),
+				bonusAttackSpeed = BitConverter.ToInt16(data, 110),
+				bonusCritRate = BitConverter.ToSingle(data, 112),
+				bonusCritResist = BitConverter.ToSingle(data, 116),
+				bonusCritPower = BitConverter.ToSingle(data, 120),
+				bonusAttack = BitConverter.ToInt32(data, 124),
+				bonusAttack2 = BitConverter.ToInt32(data, 128),
+				bonusDefense = BitConverter.ToInt32(data, 132),
+				bonusImpact = BitConverter.ToInt32(data, 136),
+				bonusBalance = BitConverter.ToInt32(data, 140),
+				bonusResistWeakening = BitConverter.ToSingle(data, 144),
+				bonusResistPeriodic = BitConverter.ToSingle(data, 148),
+				bonusResistStun = BitConverter.ToSingle(data, 152),
+
+				level = BitConverter.ToInt32(data, 156),
+				vitality = BitConverter.ToInt16(data, 160),
+				status = data[162],
+				bonusHp = BitConverter.ToInt32(data, 163),
+				bonusMp = BitConverter.ToInt32(data, 167),
+				currentStamina = BitConverter.ToInt32(data, 171),
+				maxStamina = BitConverter.ToInt32(data, 175),
+				unk2 = BitConverter.ToInt32(data, 179),
+				unk3 = BitConverter.ToInt32(data, 183),
+				unk4 = BitConverter.ToInt32(data, 187),
+				unk5 = BitConverter.ToInt32(data, 191),
+				itemLevelInventory = BitConverter.ToInt32(data, 195),
+				itemLevel = BitConverter.ToInt32(data, 199),
+				unk6 = BitConverter.ToInt32(data, 203),
+				unk7 = BitConverter.ToInt32(data, 207),
+				unk8 = BitConverter.ToInt32(data, 211),
+				unk9 = BitConverter.ToInt32(data, 215),
 			});
 		}
 
@@ -1284,6 +1453,24 @@ namespace Watcher {
 			callback(new cLockonArgs {
 				target = BitConverter.ToUInt64(data, 4),
 				attack = BitConverter.ToUInt32(data, 12)
+			});
+		}
+
+		private void _cSetGlyphs(byte[] data) {
+			var callback = cSetGlyphs;
+			if (callback == null) return;
+
+			ushort count = BitConverter.ToUInt16(data, 4);
+			ushort offset = BitConverter.ToUInt16(data, 6);
+
+			var glyphs = new List<uint>(count);
+			while (offset > 0) {
+				glyphs.Add(BitConverter.ToUInt32(data, offset + 4));
+				offset = BitConverter.ToUInt16(data, offset + 2);
+			}
+
+			callback(new cSetGlyphsArgs {
+				glyphs = glyphs
 			});
 		}
 	}

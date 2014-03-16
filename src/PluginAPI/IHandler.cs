@@ -13,6 +13,7 @@ namespace TeraWatcherAPI {
 		event sAbsorbDamageHandler sAbsorbDamage;
 		event sAnimateHandler sAnimate;
 		event sAttackEndHandler sAttackEnd;
+		event sAttackHomingHandler sAttackHoming;
 		event sAttackResultHandler sAttackResult;
 		event sAttackStartHandler sAttackStart;
 		event sChatMessageHandler sChatMessage;
@@ -21,10 +22,15 @@ namespace TeraWatcherAPI {
 		event sConditionAddHandler sConditionAdd;
 		event sConditionListHandler sConditionList;
 		event sConditionRemoveHandler sConditionRemove;
+		event sCooldownItemHandler sCooldownItem;
+		event sCooldownSkillHandler sCooldownSkill;
+		event sGlyphsHandler sGlyphs;
 		event sGuildInfoHandler sGuildInfo;
 		event sImageHandler sImage;
 		event sLifeStatusHandler sLifeStatus;
+		event sLockedOnHandler sLockedOn;
 		event sLockonHandler sLockon;
+		event sLootQueueHandler sLootQueue;
 		event sLootReceivedHandler sLootReceived;
 		event sLootRemoveHandler sLootRemove;
 		event sLootRollHandler sLootRoll;
@@ -65,6 +71,7 @@ namespace TeraWatcherAPI {
 		event sUpdateHpHandler sUpdateHp;
 		event sUpdateMpHandler sUpdateMp;
 		event sUpdateReHandler sUpdateRe;
+		event sUpdateStatsHandler sUpdateStats;
 		event sWhisperHandler sWhisper;
 
 		/*****************
@@ -74,6 +81,7 @@ namespace TeraWatcherAPI {
 
 		event cLockonHandler cLockon;
 		event cMoveHandler cMove;
+		event cSetGlyphsHandler cSetGlyphs;
 		event cTargetHandler cTarget;
 		event cWhisperHandler cWhisper;
 

@@ -46,13 +46,21 @@
   <ItemGroup>
     <Compile Include="Events\Client\cMove.cs" />
     <Compile Include="Events\Client\cLockon.cs" />
+    <Compile Include="Events\Client\cSetGlyphs.cs" />
     <Compile Include="Events\Client\cTarget.cs" />
     <Compile Include="Events\Client\cWhisper.cs" />
     <Compile Include="Events\gPacket.cs" />
+    <Compile Include="Events\Server\sGlyphs.cs" />
+    <Compile Include="Events\Server\sCooldownItem.cs" />
+    <Compile Include="Events\Server\sCooldownSkill.cs" />
+    <Compile Include="Events\Server\sLootQueue.cs" />
+    <Compile Include="Events\Server\sUpdateStats.cs" />
+    <Compile Include="Events\Server\sLockedOn.cs" />
+    <Compile Include="Events\Server\sAttackEnd.cs" />
     <Compile Include="Events\Server\sNpcUnload.cs" />
     <Compile Include="Events\Server\sAnimate.cs" />
     <Compile Include="Events\Server\sSelfInfo.cs" />
-    <Compile Include="Events\Server\sAttackEnd.cs" />
+    <Compile Include="Events\Server\sAttackHoming.cs" />
     <Compile Include="Events\Server\sNpcInfo.cs" />
     <Compile Include="Events\Server\sSystemMessage.cs" />
     <Compile Include="Events\Server\sWhisper.cs" />
